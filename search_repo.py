@@ -14,7 +14,7 @@ def get_url(url):
     new_list = '';
     for item in res_list:
         fixed_item = str(item.span.text + " " + item.a.text + " (" + item.a['href'].replace("/artifact/", "").replace("/", ".") + ")").encode('utf-8')
-        new_list += fixed_item + str(',').encode('utf-8')
+        new_list += fixed_item + str('\n').encode('utf-8')
     return new_list[:-1]
 
 print get_url("https://mvnrepository.com/search?q=" + sys.argv[1])
