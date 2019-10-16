@@ -1,22 +1,27 @@
 " MavenSearch by Ole Algoritme
+"
 com! -nargs=1 MavenSearch call s:maven_search(<f-args>)
 
 fu! s:maven_search(query) abort
 
-    let s:options_valid = split(system("python ./search_repo.py " . a:query), "\n")
+    if bufexists('[MavenSearch] Maven Repository Search')
+        close 
+        echo ''
+    endif
+
+    let s:options_valid = split(system("python ~/code/vim/maven-search.vim/search_repo.py " . a:query), "\n")
     let options_len = len(s:options_valid)
 
     if(options_len > 0)
-        echo "Please select your artifacts"
+        echo "[MavenSearch] Please select your artifacts"
     else
-        echo "No artifacts found."
-        if !bufexists('Maven Repository Search') | sil file Maven\ Repository\ Search| endif
+        echo "[MavenSearch] No artifacts found."
         return
     endif
 
-    new | exe 'resize '.(&lines/2)
+    new | exe 'resize '.(&lines/3)
     setl bh=wipe bt=nofile nobl noswf nowrap
-    if !bufexists('Maven Repository Search') | sil file Maven\ Repository\ Search| endif
+    if !bufexists('[MavenSearch] Maven Repository Search') | sil file [MavenSearch] Maven\ Repository\ Search| endif
 
     sil! 0put =s:options_valid
     sil! $d_
@@ -37,8 +42,10 @@ endfu
 
 
 fu! s:get_selected() abort 
-    if exists('w:options_chosen')
-        echo 'Do you want to add selected artifacts to pom.xml [Y/n]: ' w:options_chosen.lines
+    if ( exists('w:options_chosen.lines') && len(w:options_chosen.lines) > 0 )
+        echo '[MavenSearch] Add artifacts to pom.xml? [Y/n]: ' w:options_chosen.lines
+        nno <silent> <buffer> <nowait> y     :echo 'You accepted'<cr>
+        nno <silent> <buffer> <nowait> n     :echo 'You denied'<cr>
     endif
 endfu
 
@@ -49,6 +56,7 @@ fu! s:close() abort
                            \   : []
     au! multi_op_close | aug! multi_op_close
     close
+    echo ''
 endfu
 
 fu! s:toggle_option() abort
@@ -69,7 +77,7 @@ fu! s:toggle_option() abort
     endif
 
     if(len(w:options_chosen.lines) > 0)
-        echo '[Q=Quit | A=Add Selected] Selected: ' w:options_chosen.lines
+        echo '[MavenSearch] * [Q]uit * [A]dd << Selected: ' w:options_chosen.lines
     else
         echo ''
     endif
