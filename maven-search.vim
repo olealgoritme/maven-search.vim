@@ -1,4 +1,4 @@
-" MavenSearch by Ole Algoritme
+" maven-search.vim by olealgoritme
 "
 com! -nargs=1 MavenSearch call s:maven_search(<f-args>)
 
@@ -9,7 +9,7 @@ fu! s:maven_search(query) abort
         echo ''
     endif
 
-    let s:options_valid = split(system("python ~/code/vim/maven-search.vim/search_repo.py " . a:query), "\n")
+    let s:options_valid = split(system("python3 ~/code/vim/maven-search.vim/search_repo.py " . a:query), "\n")
     let options_len = len(s:options_valid)
 
     if(options_len > 0)
